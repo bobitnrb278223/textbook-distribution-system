@@ -1,0 +1,302 @@
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+-- -----------------------------------------------------
+-- Schema textbook_administrator
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema textbook_administrator
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `textbook_administrator` DEFAULT CHARACTER SET utf8 ;
+USE `textbook_administrator` ;
+
+-- -----------------------------------------------------
+-- Table `textbook_administrator`.`student`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `textbook_administrator`.`student` (
+  `student_id` INT NOT NULL AUTO_INCREMENT,
+  `first_name` VARCHAR(45) NOT NULL,
+  `second_name` VARCHAR(45) NOT NULL,
+  `gender` VARCHAR(45) NOT NULL,
+  `age` INT NOT NULL,
+  `city` VARCHAR(45) NOT NULL,
+  `town` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`student_id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `textbook_administrator`.`publisher`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `textbook_administrator`.`publisher` (
+  `publisher_id` INT NOT NULL AUTO_INCREMENT,
+  `first_name` VARCHAR(45) NOT NULL,
+  `last_name` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`publisher_id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `textbook_administrator`.`book`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `textbook_administrator`.`book` (
+  `book_id` INT NOT NULL AUTO_INCREMENT,
+  `title` VARCHAR(45) NOT NULL,
+  `edition` VARCHAR(45) NOT NULL,
+  `availability` VARCHAR(45) NOT NULL,
+  `state` VARCHAR(45) NULL,
+  `catalog_number` INT NULL,
+  `publisher_id` INT NULL,
+  PRIMARY KEY (`book_id`),
+  INDEX `publisher_id_idx` (`publisher_id` ASC) VISIBLE,
+  CONSTRAINT `publisher_id`
+    FOREIGN KEY (`publisher_id`)
+    REFERENCES `textbook_administrator`.`publisher` (`publisher_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `textbook_administrator`.`distributor`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `textbook_administrator`.`distributor` (
+  `distributor_id` INT NOT NULL AUTO_INCREMENT,
+  `first_name` VARCHAR(45) NOT NULL,
+  `last_name` VARCHAR(45) NOT NULL,
+  `date` DATE NOT NULL,
+  PRIMARY KEY (`distributor_id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `textbook_administrator`.`membership`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `textbook_administrator`.`membership` (
+  `distributor_id` INT NOT NULL,
+  `student_id` INT NOT NULL,
+  `date` DATE NOT NULL,
+  `status` VARCHAR(45) NOT NULL,
+  `registered_by` VARCHAR(45) NOT NULL,
+  INDEX `distributor_id_idx` (`distributor_id` ASC) VISIBLE,
+  INDEX `student_id_idx` (`student_id` ASC) VISIBLE,
+  CONSTRAINT `distributor_id`
+    FOREIGN KEY (`distributor_id`)
+    REFERENCES `textbook_administrator`.`distributor` (`distributor_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `student_id`
+    FOREIGN KEY (`student_id`)
+    REFERENCES `textbook_administrator`.`student` (`student_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `textbook_administrator`.``
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `textbook_administrator`.`` (
+)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `textbook_administrator`.`distributor`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `textbook_administrator`.`distributor` (
+  `distributor_id` INT NOT NULL AUTO_INCREMENT,
+  `first_name` VARCHAR(45) NOT NULL,
+  `last_name` VARCHAR(45) NOT NULL,
+  `date` DATE NOT NULL,
+  PRIMARY KEY (`distributor_id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `textbook_administrator`.`borrowed_transaction`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `textbook_administrator`.`borrowed_transaction` (
+  `borrowed_transaction_id` INT NOT NULL AUTO_INCREMENT,
+  `distributor_id` INT NOT NULL,
+  `book_id` INT NOT NULL,
+  `student_id` INT NOT NULL,
+  PRIMARY KEY (`borrowed_transaction_id`),
+  INDEX `distributor_id_idx` (`distributor_id` ASC) VISIBLE,
+  INDEX `book_id_idx` (`book_id` ASC) VISIBLE,
+  INDEX `student_id_idx` (`student_id` ASC) VISIBLE,
+  CONSTRAINT `distributor_id`
+    FOREIGN KEY (`distributor_id`)
+    REFERENCES `textbook_administrator`.`distributor` (`distributor_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `book_id`
+    FOREIGN KEY (`book_id`)
+    REFERENCES `textbook_administrator`.`book` (`book_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `student_id`
+    FOREIGN KEY (`student_id`)
+    REFERENCES `textbook_administrator`.`student` (`student_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `textbook_administrator`.`fined_transaction`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `textbook_administrator`.`fined_transaction` (
+  `fined_transaction_id` INT NOT NULL AUTO_INCREMENT,
+  `amount_added` INT NOT NULL,
+  `amount_received` INT NOT NULL,
+  `student_id` INT NOT NULL,
+  `borrowed_transaction` INT NOT NULL,
+  `distributor_id` INT NOT NULL,
+  PRIMARY KEY (`fined_transaction_id`),
+  INDEX `student_id_idx` (`student_id` ASC) VISIBLE,
+  INDEX `borrowed_transaction_id_idx` (`borrowed_transaction` ASC) VISIBLE,
+  INDEX `distributor_id_idx` (`distributor_id` ASC) VISIBLE,
+  CONSTRAINT `student_id`
+    FOREIGN KEY (`student_id`)
+    REFERENCES `textbook_administrator`.`student` (`student_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `borrowed_transaction_id`
+    FOREIGN KEY (`borrowed_transaction`)
+    REFERENCES `textbook_administrator`.`borrowed_transaction` (`borrowed_transaction_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `distributor_id`
+    FOREIGN KEY (`distributor_id`)
+    REFERENCES `textbook_administrator`.`distributor` (`distributor_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `textbook_administrator`.`author`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `textbook_administrator`.`author` (
+  `author_id` INT NOT NULL AUTO_INCREMENT,
+  `first_name` VARCHAR(45) NOT NULL,
+  `last_name` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`author_id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `textbook_administrator`.`books_by_author`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `textbook_administrator`.`books_by_author` (
+  `author_id` INT NOT NULL,
+  `book_id` VARCHAR(45) NOT NULL,
+  CONSTRAINT `book_id`
+    FOREIGN KEY ()
+    REFERENCES `textbook_administrator`.`book` ()
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `textbook_administrator`.`category`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `textbook_administrator`.`category` (
+  `category_id` INT NOT NULL AUTO_INCREMENT,
+  `namel` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`category_id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `textbook_administrator`.`book_by_category`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `textbook_administrator`.`book_by_category` (
+  `category_id` INT NOT NULL,
+  `book_id` INT NOT NULL,
+  CONSTRAINT `book_id`
+    FOREIGN KEY ()
+    REFERENCES `textbook_administrator`.`book` ()
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `category_id`
+    FOREIGN KEY ()
+    REFERENCES `textbook_administrator`.`category` ()
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+ 
+
+And updated my tables using the following codes
+desc textbook_administrator.student;
+
+select * from textbook_administrator.student;
+insert into textbook_administrator.student (student_id,first_name,second_name,gender,age,city,town)
+ values('01','simon','munyao','male','15','Nairobi','mavoko') ;
+commit;
+
+
+select * from textbook_administrator.student;
+
+insert into textbook_administrator.student (student_id,first_name,second_name,gender,age,city,town)
+ values('21','job','otieno','male','14','Nairobi','kibra') ;
+commit;
+
+
+insert into textbook_administrator.student (student_id,first_name,second_name,gender,age,city,town)
+ values('14','lucy','kamotho','female','15','Nairobi','californa') ;
+commit;
+
+insert into textbook_administrator.student (student_id,first_name,second_name,gender,age,city,town)
+ values('62','havil','isenya','male','17','Nairobi','buruburu') ;
+commit;
+
+insert into textbook_administrator.student (student_id,first_name,second_name,gender,age,city,town)
+ values('7','benta','fatuma','female','14','Nairobi','south_b') ;
+commit;
+insert into textbook_administrator.student (student_id,first_name,second_name,gender,age,city,town)
+ values('20','susan','kimberly','female','15','Nairobi','langata') ;
+commit;
+insert into textbook_administrator.publisher (publisher_id,first_name,last_name)
+ values('67','geogina','nyokabi') ;
+commit;
+
+insert into textbook_administrator.publisher (publisher_id,first_name,last_name)
+ values('108','talisha','shee') ;
+commit;
+
+insert into textbook_administrator.publisher (publisher_id,first_name,last_name)
+ values('90','james','antony') ;
+commit;
+insert into textbook_administrator.publisher (publisher_id,first_name,last_name)
+ values('34','mojo','peter') ;
+commit;
+
+insert into textbook_administrator.publisher (publisher_id,first_name,last_name)
+ values('107','harry','joseph') ;
+commit;
+
+insert into textbook_administrator.publisher (publisher_id,first_name,last_name)
+ values('23','ruth','annah') ;
+commit;
+
+insert into textbook_administrator.publisher (publisher_id,first_name,last_name)
+ values('56','salome','benta') ;
+commit;
+desc textbook_administrator.book;
+
+
+select * from textbook_administrator.book;
+insert into textbook_administrator.book (book_id,title,edition,availability,state,catalog_number,publisher_id)
+ values('77','social_studies book four','first','not_available','old','956','34') ;
+commit;
+
